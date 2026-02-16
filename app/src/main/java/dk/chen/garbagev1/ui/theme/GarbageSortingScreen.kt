@@ -47,8 +47,13 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
         }
 
         Button(onClick = { showSortingList = true }) {
+            Text(text = stringResource(id = R.string.search_button_label))
+        }
+
+        Button(onClick = { showSortingList = true }) {
             Text(text = stringResource(id = R.string.list_button_label))
         }
+
     }
 }
 
