@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -30,13 +32,7 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
     ) {
         var showSortingList: Boolean by rememberSaveable { mutableStateOf(value = false) }
         var garbageName by rememberSaveable { mutableStateOf("") }
-        val sortingList: List<String> = listOf(
-            "Newspaper should be placed in: Paper",
-            "Magazine should be placed in: Paper",
-            "Milk carton should be placed in: Plastic",
-            "Shoe box should be placed in: Cardboard",
-            "Can should be placed in: Metal"
-        )
+
 
         if (!showSortingList) {
             TextField(
@@ -57,12 +53,24 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
                 Text(text = stringResource(id = R.string.search_item_label))
             }
 
-            Column(modifier = Modifier.padding(vertical = 16.dp)) {
-                Text(text = stringResource(id = R.string.list_label), style = typography.titleLarge)
-                sortingList.forEach { item ->
-                    Text(text = item)
+            Text(
+                text = stringResource(id = R.string.list_label) ,
+                style = typography.titleLarge,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(dk.chen.garbagev1.ItemsDB.garbageSorting) { item ->
+                    Text (
+                        text = "${item.what} should be placed in: ${item.where}",
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
+
         }
     }
 }

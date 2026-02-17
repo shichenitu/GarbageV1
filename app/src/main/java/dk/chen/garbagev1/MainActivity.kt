@@ -22,6 +22,54 @@ import dk.chen.garbagev1.ui.theme.GarbageSortingScreen
 import dk.chen.garbagev1.ui.theme.theme.GarbageV1Theme
 
 class MainActivity : ComponentActivity() {
+    val myFileContent = """
+        newspaper, paper
+        magazine, paper
+        milk carton, plastic
+        shoe box, cardboard
+        can, metal
+        book, paper
+        aluminium foil (clean), metal
+        teddy bears, daily waste
+        flower pot (plastic), daily waste
+        cables, metal
+        envelopes, paper
+        detergents, plastic
+        musical instrument, wood
+        cookware, metal
+        hammer, metal
+        curtain clips, metal
+        jars, glass
+        carpets, bulky waste
+        postcards, cardboard
+        chips bag, other
+        tooth brush, plastic
+        shampoo bottle, plastic
+        capsule, metal
+        needle, metal
+        letter, paper
+        plastic bottle, plastic
+        meat, food waste
+        clothes, other
+        cutlery, metal
+        paint, chemical
+        chlorine, chemical
+        computer, electronics
+        battery, batteries
+        printer, electronics
+        potato, food
+        cabbage, food
+        kale, food
+        cauliflower, food
+        onion, food
+        beetroot, food
+        celeriac, food
+        cellery, food
+        flour, food
+        sugar, food
+        rice, food
+    """.trimIndent()
+
     // Helper function to easily show a Toast
     private fun showToast(message: String) {
         Toast.makeText(
@@ -34,6 +82,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ItemsDB.populateItems(myFileContent)
         showToast("LIFECYCLE: onCreate()")
         Log.d("LIFECYCLE", "onCreate()")
         enableEdgeToEdge()
