@@ -41,7 +41,14 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
                 label = { Text(text = stringResource(id = R.string.garbage_item_label)) }
             )
 
-            Button(onClick = { /* TODO: Search Feature */ }) {
+            Button(onClick = {
+                val foundItem = dk.chen.garbagev1.ItemsDB.findItem(garbageName)
+                if (foundItem != null) {
+                    garbageName = "${foundItem.what} should be placed in: ${foundItem.where}"
+                } else {
+                    garbageName = "$garbageName should be placed in: not found"
+                }
+            }) {
                 Text(text = stringResource(id = R.string.where_label))
             }
 

@@ -30,6 +30,11 @@ object ItemsDB {
         }
     }
 
+    fun findItem(query: String) : Item? {
+        val trimmedQuery = query.trim()
+        return _garbageSorting.find { it.what.equals(trimmedQuery, ignoreCase = true)}
+    }
+
     private fun String.toTitleCase(): String {
         return this.trim().split(" ").joinToString(" ") { word ->
             word.lowercase()
