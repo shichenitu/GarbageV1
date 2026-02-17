@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,7 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         var showSortingList: Boolean by rememberSaveable { mutableStateOf(value = false) }
+        var garbageName by rememberSaveable { mutableStateOf("") }
 
         val sortingList: List<String> = listOf(
             "Newspaper should be placed in: Paper",
@@ -46,8 +48,14 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
             }
         }
 
+        TextField(
+            value = garbageName,
+            onValueChange = { garbageName = it },
+            label = { Text(text = stringResource(id = R.string.garbage_item_label)) }
+        )
+
         Button(onClick = { showSortingList = true }) {
-            Text(text = stringResource(id = R.string.search_button_label))
+            Text(text = stringResource(id = R.string.where_label))
         }
 
         Button(onClick = { showSortingList = true }) {

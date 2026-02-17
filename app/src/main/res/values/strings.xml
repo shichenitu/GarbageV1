@@ -2,5 +2,6 @@
     <string name="app_name">Garbage Sorting</string>
     <string name="list_label">Garbage Sorting</string>
     <string name="list_button_label">Show Sorting List</string>
-    <string name="search_button_label">Where</string>
+    <string name="where_label">Where</string>
+    <string name="garbage_item_label">Garbage item</string>
 </resources>
