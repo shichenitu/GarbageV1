@@ -11,13 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import dk.chen.garbagev1.ui.theme.GarbageSortingScreen
 import dk.chen.garbagev1.ui.theme.theme.GarbageV1Theme
 
@@ -88,6 +89,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GarbageV1Theme() {
+                val snackbarHostState = remember { SnackbarHostState() }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
@@ -99,9 +101,13 @@ class MainActivity : ComponentActivity() {
                                 containerColor = colorScheme.primaryContainer
                             )
                         )
+                    },
+                    snackbarHost = {
+                        SnackbarHost(hostState = snackbarHostState)
                     }) { innerPadding ->
                     GarbageSortingScreen(
-                        modifier = Modifier.padding(paddingValues = innerPadding)
+                        modifier = Modifier.padding(paddingValues = innerPadding) ,
+                        snackbarHostState = snackbarHostState
                     )
                 }
             }

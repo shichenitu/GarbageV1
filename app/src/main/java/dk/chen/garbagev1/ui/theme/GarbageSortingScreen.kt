@@ -1,5 +1,6 @@
 package dk.chen.garbagev1.ui.theme
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,11 +9,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -20,11 +26,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dk.chen.garbagev1.ItemsDB
 import dk.chen.garbagev1.R
 import dk.chen.garbagev1.ui.theme.theme.GarbageV1Theme
+import kotlinx.coroutines.launch
 
 @Composable
-fun GarbageSortingScreen(modifier: Modifier = Modifier) {
+fun GarbageSortingScreen(modifier: Modifier = Modifier, snackbarHostState: SnackbarHostState) {
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -70,10 +80,31 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(dk.chen.garbagev1.ItemsDB.garbageSorting) { item ->
+                items(ItemsDB.garbageSorting) { item ->
                     Text (
                         text = "${item.what} should be placed in: ${item.where}",
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                scope.launch {
+                                    val result = snackbarHostState
+                                        .showSnackbar(
+                                            message = "Removed ${item.what}",
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    when (result) {
+                                        SnackbarResult.ActionPerformed -> {
+                                            /* Handle snackbar action performed (UNDO) */
+                                        }
+
+                                        SnackbarResult.Dismissed -> {
+                                            /* Handle snackbar dismissed */
+                                            ItemsDB.removeItem(item)
+                                        }
+                                    }
+                                }
+                            }
                     )
                 }
             }
@@ -86,6 +117,7 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier) {
 @Composable
 fun SortingListScreenPreview() {
     GarbageV1Theme() {
-        GarbageSortingScreen()
+        val snackbarHostState = remember { SnackbarHostState() }
+        GarbageSortingScreen(snackbarHostState = snackbarHostState)
     }
 }
