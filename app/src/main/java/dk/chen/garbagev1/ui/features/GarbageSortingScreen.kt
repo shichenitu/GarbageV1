@@ -1,4 +1,4 @@
-package dk.chen.garbagev1.ui.theme
+package dk.chen.garbagev1.ui.features
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,7 +52,7 @@ fun GarbageSortingScreen(modifier: Modifier = Modifier, snackbarHostState: Snack
             )
 
             Button(onClick = {
-                val foundItem = dk.chen.garbagev1.ItemsDB.findItem(garbageName)
+                val foundItem = ItemsDB.findItem(garbageName)
                 if (foundItem != null) {
                     garbageName = "${foundItem.what} should be placed in: ${foundItem.where}"
                 } else {
