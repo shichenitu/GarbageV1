@@ -5,4 +5,8 @@
     <string name="where_label">Where</string>
     <string name="garbage_item_label">Garbage item</string>
     <string name="search_item_label">Search item</string>
+    <string name="undo_label">Undo</string>
+    <string name="item_removed_label">Item "%1$s" from "%2$s" was removed</string>
+    <string name="undo_confirmation_message">The deletion was undone</string>
+    <string name="textfield_error_message">Input field must be filled in</string>
 </resources>
