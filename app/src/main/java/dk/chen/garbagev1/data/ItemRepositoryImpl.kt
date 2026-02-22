@@ -8,7 +8,6 @@ import dk.chen.garbagev1.domain.ItemRepository
 import dk.chen.garbagev1.domain.toDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import java.util.Scanner
@@ -19,6 +18,7 @@ import javax.inject.Singleton
 class ItemRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) : ItemRepository {
 
     private val _garbageSorting = MutableStateFlow<List<ItemDto>>(emptyList())
+    private val _items = MutableStateFlow<List<ItemDto>>(emptyList())
 
     init {
         val list = mutableListOf<ItemDto>()
@@ -58,6 +58,19 @@ class ItemRepositoryImpl @Inject constructor(@ApplicationContext private val con
                 currentList + formattedItemDto
             }
         }
+    }
+
+    override fun populateItems(rawText: String) {
+        val newList = rawText.lines()
+            .filter { it.isNotBlank() }
+            .mapNotNull { line ->
+                val parts = line.split(",")
+                if (parts.size == 2) {
+                    ItemDto(what = parts[0].trim(), where = parts[1].trim())
+                } else null
+            }
+
+        _items.update { newList }
     }
 
     override fun removeItem(item: Item) {
