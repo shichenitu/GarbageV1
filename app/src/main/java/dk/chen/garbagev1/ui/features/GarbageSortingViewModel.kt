@@ -1,6 +1,5 @@
 package dk.chen.garbagev1.ui.features
 
-import android.R.attr.visible
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.annotation.concurrent.Immutable
@@ -26,7 +24,7 @@ class GarbageSortingViewModel @Inject constructor (
 ) : ViewModel() {
     private val sortingListVisibility: MutableStateFlow<Boolean> = MutableStateFlow(value = false)
     private val sortingList: StateFlow<List<Item>> =
-        itemRepository.getSortingList()
+        itemRepository.showSortingList()
             .stateIn(
                 scope = viewModelScope,
                 started = WhileSubscribed(stopTimeoutMillis = 5000),
@@ -43,8 +41,8 @@ class GarbageSortingViewModel @Inject constructor (
         flow4 = itemWhere
     ) { currentShoppingList, currentListVisibility, what, where ->
         UiState(
-            shoppingList = currentShoppingList,
-            displayShoppingList = currentListVisibility,
+            sortingList = currentShoppingList,
+            displaySortingList = currentListVisibility,
             itemWhat = what,
             itemWhere = where,
             toggleListVisibilityButtonLabel = if (currentListVisibility) R.string.search_item_label else R.string.show_sorting_list_label
@@ -64,14 +62,14 @@ class GarbageSortingViewModel @Inject constructor (
             itemWhere.update { newValue }
         }
 
-        override fun onAddItemClick(
-            itemWhat: String,
-            itemWhere: String,
-        ) {
-            if (itemWhat.isNotBlank() && itemWhere.isNotBlank()) {
-                itemRepository.addItem(Item(what = itemWhat.trim(), where = itemWhere.trim()))
-                this@GarbageSortingViewModel.itemWhat.update { "" }
-                this@GarbageSortingViewModel.itemWhere.update { "" }
+        override fun onSearchClick(itemWhat: String) {
+            if (itemWhat.isNotBlank()) {
+                val foundItem = itemRepository.findItem(itemWhat)
+                if (foundItem != null) {
+                    itemWhere.update { "${foundItem.what} should be placed in: ${foundItem.where}" }
+                } else {
+                    itemWhere.update { "${itemWhat} not found" }
+                }
             } else {
                 snackBarHandler.postMessage(msgRes = R.string.textfield_error_message)
             }
@@ -98,8 +96,8 @@ class GarbageSortingViewModel @Inject constructor (
     }
 
     data class UiState(
-        val shoppingList: List<Item> = emptyList(),
-        val displayShoppingList: Boolean = false,
+        val sortingList: List<Item> = emptyList(),
+        val displaySortingList: Boolean = false,
         val itemWhat: String = "",
         val itemWhere: String = "",
         @get:StringRes val toggleListVisibilityButtonLabel: Int = R.string.show_sorting_list_label
@@ -107,7 +105,7 @@ class GarbageSortingViewModel @Inject constructor (
 
     @Immutable
     interface UiEvents {
-        fun onAddItemClick(itemWhat: String, itemWhere: String)
+        fun onSearchClick(itemWhat: String)
         fun onRemoveItemClick(item: Item)
         fun onToggleListVisibilityClick()
         fun onWhatChange(newValue: String)
