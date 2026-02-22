@@ -2,13 +2,13 @@ package dk.chen.garbagev1.ui.features
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dk.chen.garbagev1.Item
+import dk.chen.garbagev1.domain.Item
 import dk.chen.garbagev1.R
 import dk.chen.garbagev1.ui.theme.theme.GarbageV1Theme
 import dk.chen.garbagev1.domain.fullDescription
@@ -51,40 +51,48 @@ private fun GarbageSortingScreen(
     uiState: GarbageSortingViewModel.UiState,
     uiEvents: GarbageSortingViewModel.UiEvents
 ) {
-    Column(
+    val focusManager = LocalFocusManager.current
+
+    LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val focusManager = LocalFocusManager.current
-
-        TextField(
-            value = uiState.itemWhat,
-            onValueChange = { uiEvents.onWhatChange(it) },
-            label = { Text(text = stringResource(id = R.string.garbage_item_label)) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-        )
-
-        if (uiState.itemWhere.isNotEmpty()) {
-            Text(
-                text = uiState.itemWhere,
-                style = typography.bodyLarge,
-                modifier = Modifier.padding(top = 8.dp)
+        item {
+            TextField(
+                value = uiState.itemWhat,
+                onValueChange = { uiEvents.onWhatChange(it) },
+                label = { Text(text = stringResource(id = R.string.garbage_item_label)) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
             )
         }
 
-        Spacer(Modifier.height(16.dp))
+        item {
+            if (uiState.itemWhere.isNotEmpty()) {
+                Text(
+                    text = uiState.itemWhere,
+                    style = typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        }
+
+        item { Spacer(Modifier.height(16.dp)) }
 
         if (uiState.displaySortingList) {
-            Column(modifier = Modifier.padding(vertical = 16.dp)) {
+            item {
                 Text(
                     text = stringResource(id = R.string.list_label),
-                    style = typography.titleLarge
+                    style = typography.titleLarge,
+                    modifier = Modifier.padding(vertical = 16.dp)
                 )
-                val context = LocalContext.current
-                uiState.sortingList.forEach { item ->
+            }
+
+            uiState.sortingList.forEach { item ->
+                item {
+                    val context = LocalContext.current
                     Text(
                         text = item.fullDescription(context),
                         modifier = Modifier.clickable { uiEvents.onRemoveItemClick(item) }
@@ -93,15 +101,17 @@ private fun GarbageSortingScreen(
             }
         }
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = {
-                uiEvents.onSearchClick(itemWhat = uiState.itemWhat)
-                focusManager.clearFocus()
-            }) {
-                Text(text = stringResource(id = R.string.where_label))
-            }
-            Button(onClick = uiEvents::onToggleListVisibilityClick) {
-                Text(text = stringResource(id = uiState.toggleListVisibilityButtonLabel))
+        item {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Button(onClick = {
+                    uiEvents.onSearchClick(itemWhat = uiState.itemWhat)
+                    focusManager.clearFocus()
+                }) {
+                    Text(text = stringResource(id = R.string.where_label))
+                }
+                Button(onClick = uiEvents::onToggleListVisibilityClick) {
+                    Text(text = stringResource(id = uiState.toggleListVisibilityButtonLabel))
+                }
             }
         }
     }
@@ -121,7 +131,6 @@ fun GarbageSortingScreenPreview() {
                 override fun onToggleListVisibilityClick() {}
                 override fun onWhatChange(newValue: String) {}
                 override fun onWhereChange(newValue: String) {}
-                override fun onAddItemClick(newValue: String) {}
             }
         )
     }

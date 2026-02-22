@@ -1,4 +1,4 @@
-package dk.chen.garbagev1
+package dk.chen.garbagev1.domain
 
 import androidx.compose.runtime.mutableStateListOf
 
