@@ -83,7 +83,7 @@ private fun GarbageSortingScreen(
         if (uiState.displaySortingList) {
             item {
                 Text(
-                    text = stringResource(id = R.string.list_label),
+                    text = stringResource(id = R.string.app_name),
                     style = typography.titleLarge,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )

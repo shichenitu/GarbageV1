@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import java.util.Scanner
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,21 +17,15 @@ import javax.inject.Singleton
 class ItemRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) : ItemRepository {
 
     private val _garbageSorting = MutableStateFlow<List<ItemDto>>(emptyList())
-    private val _items = MutableStateFlow<List<ItemDto>>(emptyList())
 
     init {
-        val list = mutableListOf<ItemDto>()
-        val scanner = Scanner(context.resources.openRawResource(R.raw.garbage))
-        scanner.useDelimiter(";|\n")
-        while (scanner.hasNext()) {
-            val what = scanner.next().trim()
-            if (scanner.hasNext()) {
-                val where = scanner.next().trim()
-                list.add(ItemDto(what, where))
-            }
+        try {
+            val rawText = context.resources.openRawResource(R.raw.garbage)
+                .bufferedReader().use { it.readText() }
+            populateItems(rawText)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        scanner.close()
-        _garbageSorting.value = list
     }
 
     override fun showSortingList(): Flow<List<Item>> {
@@ -61,16 +54,23 @@ class ItemRepositoryImpl @Inject constructor(@ApplicationContext private val con
     }
 
     override fun populateItems(rawText: String) {
-        val newList = rawText.lines()
+        val allLines = rawText.split(Regex("\\r?\\n"))
+
+        val newList = allLines
+            .map { it.trim() }
             .filter { it.isNotBlank() }
             .mapNotNull { line ->
-                val parts = line.split(",")
-                if (parts.size == 2) {
-                    ItemDto(what = parts[0].trim(), where = parts[1].trim())
-                } else null
+                if (line.contains(", ")) {
+                    val parts = line.split(", ", limit = 2)
+                    ItemDto(
+                        what = parts[0].trim(),
+                        where = parts[1].trim()
+                    )
+                } else {
+                    null
+                }
             }
-
-        _items.update { newList }
+        _garbageSorting.update { newList }
     }
 
     override fun removeItem(item: Item) {
