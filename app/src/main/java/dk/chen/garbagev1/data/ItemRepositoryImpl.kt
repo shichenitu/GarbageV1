@@ -89,8 +89,8 @@ class ItemRepositoryImpl @Inject constructor(@ApplicationContext private val con
     private fun List<ItemDto>.sortedByWhereAndWhat() =
         this.sortedWith(
             compareBy(
-                { it.where },
-                { it.what }
+                { it.where.lowercase() },
+                { it.what.lowercase() }
             )
         )
 }
